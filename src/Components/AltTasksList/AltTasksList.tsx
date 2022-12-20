@@ -1,11 +1,11 @@
-import { FC, Fragment, useCallback } from "react";
+import { FC, useEffect } from "react";
 import { useGetAltTasks } from "../../hooks/api/tasks.api.hooks";
 import { Loading } from "../_UI/Loading/Loading";
 import { Update } from "../_UI/Update/Update";
 import { ShowError } from "../_UI/ShowError/ShowError";
 import { AltTasksListItem } from "./AltTasksList.item";
 import { Link } from "react-router-dom";
-import { useInfinityScroll } from "../../hooks/useInfinityScroll";
+import { useInView } from "react-intersection-observer";
 
 export const AltTasksList: FC = () => {
   const {
@@ -19,13 +19,15 @@ export const AltTasksList: FC = () => {
     error,
   } = useGetAltTasks();
 
-  const fetchNext = useCallback(() => {
-    if (!isFetchingNextPage && hasNextPage) {
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (inView && !isFetchingNextPage && hasNextPage) {
       fetchNextPage().then();
     }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  useInfinityScroll(document, fetchNext, 300);
+  }, [ref, inView, isFetchingNextPage, hasNextPage, fetchNextPage]);
 
   if (isLoading) {
     return <Loading />;
@@ -34,19 +36,18 @@ export const AltTasksList: FC = () => {
   return (
     <>
       <ShowError isError={isError} error={error} />
-      <ul>
-        {data?.pages.map((page, idx) => (
-          <Fragment key={idx}>
-            {page.tasks.map((task) => (
-              <li key={task.id}>
-                <Link to={`/task/${task.id}`}>
-                  <AltTasksListItem task={task} />
-                </Link>
-              </li>
-            ))}
-          </Fragment>
-        ))}
-      </ul>
+
+      {data?.pages.map((page, idx) => (
+        <ul key={idx} ref={idx === data.pages.length - 1 ? ref : null}>
+          {page.tasks.map((task) => (
+            <li key={task.id}>
+              <Link to={`/task/${task.id}`}>
+                <AltTasksListItem task={task} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ))}
 
       <Update isUpdate={isFetching} />
     </>
