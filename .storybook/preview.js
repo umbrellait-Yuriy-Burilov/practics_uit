@@ -14,7 +14,11 @@ export const parameters = {
 
 // global args
 export const argTypes = {
-  theme: { control: "select", options: ["light", "dark"] },
+  theme: {
+    description: "фейковый глобальный контроллер темы",
+    control: "select",
+    options: ["light", "dark"],
+  },
 };
 export const args = { theme: "light" };
 
