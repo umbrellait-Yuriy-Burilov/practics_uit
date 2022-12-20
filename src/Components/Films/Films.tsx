@@ -30,7 +30,7 @@ export const Films: FC = () => {
       {films.map((film) => (
         <li key={film.episode_id} onMouseEnter={() => prefetchFilm(film.url)}>
           <b>Film: </b>
-          <Link to={`film/${getIdFromFilmUrl(film.url)}`} >
+          <Link to={`/films/${getIdFromFilmUrl(film.url)}`} >
             {film.title}
           </Link>
         </li>
