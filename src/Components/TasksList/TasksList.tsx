@@ -21,7 +21,7 @@ export const TasksList: FC = () => {
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
-            <Link to={`/tasks/${task.id}`}>
+            <Link to={`/task/${task.id}`}>
               <TasksListItem task={task} />
             </Link>
           </li>

@@ -12,11 +12,15 @@ export const Router: FC = () => {
     <Routes>
       <Route path={"/"} element={<IndexPage />} />
 
-      <Route path={"/films"} element={<Films />} />
-      <Route path={"/films/:filmId"} element={<FilmPageWrapper />} />
+      <Route path={"films"} element={<Films />}>
+        <Route path={":filmId"} element={<FilmPageWrapper />} />
+      </Route>
 
-      <Route path={"/tasks"} element={<TasksPage />} />
-      <Route path={"/tasks/:taskId"} element={<TaskPage />} />
+      <Route path={"tasks"} element={<TasksPage />}>
+        <Route path={":page"} element={<TasksPage />} />
+      </Route>
+
+      <Route path={"task/:taskId"} element={<TaskPage />} />
 
       <Route path={"*"} element={<NotFoundPage />} />
     </Routes>
