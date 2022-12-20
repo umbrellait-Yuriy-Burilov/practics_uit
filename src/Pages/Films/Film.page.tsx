@@ -1,4 +1,4 @@
-import { FC } from "react";
+import {FC} from 'react';
 import { useGetFilm } from "../../hooks/api/films.api.hooks";
 import { Loading } from "../../Components/_UI/Loading/Loading";
 import { Update } from "../../Components/_UI/Update/Update";
