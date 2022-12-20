@@ -7,8 +7,10 @@ const queryClient = new QueryClient({
       queries: {
         refetchOnWindowFocus: false,
         // staleTime: Infinity, // время свежести данных
-        staleTime: 60 * 1000,
-        cacheTime: 60 * 1000
+        // staleTime: 60 * 1000,
+        // cacheTime: 60 * 1000,
+        // retry: 2,
+        // retryDelay: 10 * 1000, // по умолчанию CB не рекомендуется к переопределению
       }
     }
   }
