@@ -1,4 +1,9 @@
-import { QueryFunctionContext, useMutation, useQuery } from "react-query";
+import {
+  QueryFunctionContext,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+} from "react-query";
 import { queryClient } from "../../config/QueryProvider";
 import "./mocks/Tasks.mock";
 import { MOCK_API_TASK_URL } from "./mocks/Tasks.mock";
@@ -19,6 +24,12 @@ export type TasksType = {
 export const getTasks = ({ queryKey }: QueryFunctionContext) => {
   const [, pageId] = queryKey;
   return fetch(`${API_TASK_URL}?page=${pageId}`).then(
+    (res) => res.json() as Promise<TasksType>
+  );
+};
+
+export const getAltTasks = ({ pageParam = 1 }: QueryFunctionContext) => {
+  return fetch(`${API_TASK_URL}?page=${pageParam}`).then(
     (res) => res.json() as Promise<TasksType>
   );
 };
@@ -61,6 +72,21 @@ export const useGetTasks = (page: string) => {
     keepPreviousData: true, // останавливаем рендер до загрузки данных
   });
 };
+
+export const useGetAltTasks = () =>
+  useInfiniteQuery(["tasks"], getAltTasks, {
+    getNextPageParam: (lastPage, pages) => {
+      const { count } = lastPage;
+      const nextPages = Math.ceil(count / (pages.length * 10)) - 1;
+
+      if (nextPages) {
+        return pages.length + 1;
+      }
+
+      return null;
+    },
+    // keepPreviousData: true, // останавливаем рендер до загрузки данных
+  });
 
 export const usePostTask = () =>
   useMutation(postTask, {

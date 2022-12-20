@@ -5,7 +5,7 @@ const API_TASK_URL = "/api/tasks";
 
 export const MOCK_API_TASK_URL = API_TASK_URL;
 
-const tasks = [...Array(20)].map((item, idx) => ({
+const tasks = [...Array(200)].map((item, idx) => ({
   id: idx,
   title: `Task ${idx + 1}`,
 }));
