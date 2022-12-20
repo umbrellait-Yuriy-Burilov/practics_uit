@@ -1,18 +1,26 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { Link } from "react-router-dom";
+import Button from "../../Components/_UI/Button/Button";
+import { StyledIndexMenu } from "./Index.page.styled";
 
 export const IndexPage: FC = () => {
   return (
-    <ul>
+    <StyledIndexMenu>
       <li>
-        <Link to={"/films"}>Films</Link>
+        <Link to={"/films"}>
+          <Button>Films</Button>
+        </Link>
       </li>
       <li>
-        <Link to={"/tasks"}>Tasks</Link>
+        <Link to={"/tasks"}>
+          <Button>Tasks</Button>
+        </Link>
       </li>
       <li>
-        <Link to={"/alt-tasks"}>Tasks - infinity loading</Link>
+        <Link to={"/alt-tasks"}>
+          <Button>Tasks - infinity loading</Button>
+        </Link>
       </li>
-    </ul>
+    </StyledIndexMenu>
   );
 };
