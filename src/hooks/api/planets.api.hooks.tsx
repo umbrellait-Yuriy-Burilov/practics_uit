@@ -33,6 +33,10 @@ export const useGetPlanet = (planetUrl: string) => {
   return useQuery(
     ['planet', planetUrl],
     () => axios.get<PlanetType>(planetUrl).then(res => res.data),
-    {}
+    {
+      initialData: {
+        name: 'some planet',
+      } as PlanetType
+    }
   )
 }
