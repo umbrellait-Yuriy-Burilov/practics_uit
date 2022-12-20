@@ -5,13 +5,17 @@ export const StyledCheckbox = styled.input.attrs({ type: "checkbox" })`
   width: 16px;
   height: 16px;
   cursor: pointer;
-
+  transform: translate(0, 12%);
+  &:not(:last-child) {
+    margin-right: 8px;
+  }
   &:disabled {
     cursor: auto;
   }
 
   &:before {
     content: "";
+    display: block;
     position: absolute;
     inset: -1px;
     border: 1px solid #d9d9d9;
@@ -38,6 +42,7 @@ export const StyledCheckbox = styled.input.attrs({ type: "checkbox" })`
 
   &:checked:after {
     content: "";
+    display: block;
     border: 2px solid #fff;
     border-top: 0;
     border-left: 0;
