@@ -4,6 +4,7 @@ import axios from "axios";
 
 export type FilmType = {
   title: string;
+  opening_crawl: string,
   url: string;
   created: string;
   director: string;
