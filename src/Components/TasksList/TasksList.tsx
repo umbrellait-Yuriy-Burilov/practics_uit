@@ -4,10 +4,11 @@ import { Loading } from "../_UI/Loading/Loading";
 import { Update } from "../_UI/Update/Update";
 import { ShowError } from "../_UI/ShowError/ShowError";
 import { TasksListItem } from "./TasksList.item";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export const TasksList: FC = () => {
-  const { data, isLoading, isFetching, isError, error } = useGetTasks();
+  const { page = "1" } = useParams();
+  const { data, isLoading, isFetching, isError, error } = useGetTasks(page);
 
   const tasks = data || [];
 

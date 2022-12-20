@@ -7,26 +7,17 @@ export const MOCK_API_TASK_URL = API_TASK_URL;
 
 let countId = 3;
 
-const tasksMock: TasksType = [
-  {
-    id: 0,
-    title: "task 1",
-  },
-  {
-    id: 1,
-    title: "task 2",
-  },
-  {
-    id: 2,
-    title: "task 3",
-  },
-];
+const tasksMock: TasksType = [...Array(100)].map((item, idx) => ({
+  id: idx,
+  title: `Task ${idx + 1}`,
+}));
 
 const wrongWords = ["bad", "anti-test"];
 
-fetchMock.get(API_TASK_URL, async () => {
+fetchMock.get(`begin:${API_TASK_URL}`, async (url) => {
+  const page = Number((url.split("?").pop() as string).replace("page=", ""));
   await new Promise((res) => setTimeout(res, 1000));
-  return tasksMock;
+  return tasksMock.slice((page - 1) * 10, page * 10);
 });
 
 fetchMock.get(`express:${API_TASK_URL}/:id`, async (url: string) => {

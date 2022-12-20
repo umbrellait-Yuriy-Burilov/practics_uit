@@ -12,40 +12,40 @@ export type TaskType = {
 
 export type TasksType = TaskType[];
 
-export const usePostTask = () => useMutation(
-  (task: Omit<TaskType, "id">) =>
-    fetch(API_TASK_URL, {
-      method: "POST",
-      body: JSON.stringify(task),
-    }),
-  {
-    onMutate: (data) => {
+export const usePostTask = () =>
+  useMutation(
+    (task: Omit<TaskType, "id">) =>
+      fetch(API_TASK_URL, {
+        method: "POST",
+        body: JSON.stringify(task),
+      }),
+    {
+      onMutate: (data) => {
+        const oldTasks = queryClient.getQueryData<TasksType>(["tasks"]) ?? [];
 
-      const oldTasks = queryClient.getQueryData<TasksType>(["tasks"]) ?? [];
+        queryClient.setQueryData<TasksType>(
+          ["tasks"],
+          (tasks = [] as TasksType) => [
+            ...tasks,
+            {
+              id: Date.now(),
+              ...data,
+            },
+          ]
+        );
 
-      queryClient.setQueryData<TasksType>(
-        ["tasks"],
-        (tasks = [] as TasksType) => [
-          ...tasks,
-          {
-            id: Date.now(),
-            ...data,
-          },
-        ]
-      );
-
-      // add context
-      return oldTasks;
-    },
-    onError: (error, variables, oldTasks) => {
-      // extract oldTasks from context
-      queryClient.setQueryData(["tasks"], () => oldTasks);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(["tasks"]).then(r => r);
-    },
-  }
-);
+        // add context
+        return oldTasks;
+      },
+      onError: (error, variables, oldTasks) => {
+        // extract oldTasks from context
+        queryClient.setQueryData(["tasks"], () => oldTasks);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries(["tasks"]).then((r) => r);
+      },
+    }
+  );
 
 export const usePutTask = () =>
   useMutation(
@@ -59,7 +59,9 @@ export const usePutTask = () =>
         queryClient.setQueryData(["task", data.id.toString()], data);
       },
       onSettled: (res, err, data) => {
-        queryClient.invalidateQueries(["task", data.id.toString()]).then(r => r);
+        queryClient
+          .invalidateQueries(["task", data.id.toString()])
+          .then((r) => r);
       },
     }
   );
@@ -73,9 +75,12 @@ export const useGetTask = (id: string) =>
       ),
     {}
   );
-export const useGetTasks = () =>
+export const useGetTasks = (page: string) =>
   useQuery(
-    ["tasks"],
-    () => fetch(API_TASK_URL).then((res) => res.json() as Promise<TasksType>),
+    ["tasks", page],
+    () =>
+      fetch(`${API_TASK_URL}?page=${page}`).then(
+        (res) => res.json() as Promise<TasksType>
+      ),
     {}
   );
