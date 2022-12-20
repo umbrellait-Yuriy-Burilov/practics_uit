@@ -30,19 +30,19 @@ const sizes: Record<SizesType, FlattenSimpleInterpolation> = {
   `,
   default: css`
     font-size: 14px;
-    line-height: 24px;
-    height: 32px;
+    line-height: 18px;
+    height: 26px;
   `,
   big: css`
     font-size: 20px;
-    line-height: 34px;
-    height: 42px;
+    line-height: 30px;
+    height: 38px;
   `,
 };
 
 export const StyledButton = styled.button<ButtonPropsType>`
   box-shadow: 0 2px 0 rgb(5 145 255 / 10%);
-  padding: 4px 12px;
+  padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
   border: 1px solid;
