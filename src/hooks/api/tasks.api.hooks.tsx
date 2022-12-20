@@ -6,9 +6,9 @@ import {
 } from "react-query";
 import { queryClient } from "../../config/QueryProvider";
 import "./mocks/Tasks.mock";
-import { MOCK_API_TASK_URL } from "./mocks/Tasks.mock";
-import { useEffect } from "react";
+import { MOCK_API_TASK_URL, sortByPined } from "./mocks/Tasks.mock";
 import { TaskType } from "../../models/task.type";
+import { useParams } from "react-router-dom";
 
 export const API_TASK_URL = MOCK_API_TASK_URL;
 
@@ -54,18 +54,24 @@ export const useGetTask = (id: string) => useQuery(["task", id], getTask, {});
 export const useGetTasks = (page: string) => {
   const pageNum = Number(page);
 
-  useEffect(() => {
-    queryClient
-      .prefetchQuery(["tasks", (pageNum + 1).toString()], getTasks)
-      .then();
-    pageNum > 0 &&
-      queryClient
-        .prefetchQuery(["tasks", (pageNum - 1).toString()], getTasks)
-        .then();
-  }, [pageNum]);
-
   return useQuery(["tasks", page], getTasks, {
     keepPreviousData: true, // останавливаем рендер до загрузки данных
+    onSuccess: (data) => {
+      const { tasks } = data;
+
+      tasks.forEach((task) => {
+        queryClient.setQueryData(["task", task.id.toString()], task);
+      });
+
+      queryClient
+        .prefetchQuery(["tasks", (pageNum + 1).toString()], getTasks)
+        .then();
+
+      pageNum > 0 &&
+        queryClient
+          .prefetchQuery(["tasks", (pageNum - 1).toString()], getTasks)
+          .then();
+    },
   });
 };
 
@@ -84,15 +90,29 @@ export const useGetAltTasks = () =>
     // keepPreviousData: true, // останавливаем рендер до загрузки данных
   });
 
-export const usePostTask = () =>
-  useMutation(postTask, {
-    onMutate: (data) => {
-      // todo после добавления page key не работает позитивное добавление
-      const oldTasks =
-        queryClient.getQueryData<TasksResponseType>(["tasks"]) ?? [];
+export const usePostTask = () => {
+  const { page: queryPage = "1" } = useParams();
 
-      queryClient.setQueryData<TasksResponseType>(["tasks"], (tasksData) =>
-        buildNewTasks(data, tasksData)
+  return useMutation(postTask, {
+    onMutate: (data) => {
+      queryClient.cancelQueries(["tasks"]).then();
+
+      const oldTasks =
+        queryClient.getQueryData<TasksResponseType>(["tasks", queryPage]) ?? [];
+
+      queryClient.setQueryData<TasksResponseType>(
+        ["tasks", queryPage],
+        (tasksData) => {
+          const count = tasksData?.count || 0;
+
+          const isLastPage = Math.ceil(count / 10).toString() === queryPage;
+
+          if (isLastPage && count % 10 > 0) {
+            return buildNewTasks(data, tasksData);
+          }
+
+          return tasksData as TasksResponseType;
+        }
       );
 
       // add context
@@ -106,18 +126,45 @@ export const usePostTask = () =>
       queryClient.invalidateQueries(["tasks"]).then((r) => r);
     },
   });
+};
 
-export const usePutTask = () =>
-  useMutation(putTask, {
+export const usePutTask = () => {
+  const { page: queryPage = "1" } = useParams();
+
+  return useMutation(putTask, {
     onMutate: (data) => {
+      queryClient.cancelQueries(["tasks"]).then();
+
+      const oldTasks =
+        queryClient.getQueryData<TasksResponseType>(["tasks", queryPage]) ?? [];
+
+      queryClient.setQueryData<TasksResponseType>(
+        ["tasks", queryPage],
+        (tasksData) => {
+          const tasks = tasksData?.tasks || [];
+
+          return {
+            tasks: [
+              ...tasks
+                .map((task) => (task.id === data.id ? data : task))
+                .sort(sortByPined),
+            ],
+            count: tasksData?.count || 0,
+          };
+        }
+      );
+
       queryClient.setQueryData(["task", data.id.toString()], data);
+      queryClient.invalidateQueries(["task", data.id.toString()]);
+
+      return oldTasks;
     },
     onSettled: (res, err, data) => {
-      queryClient
-        .invalidateQueries(["task", data.id.toString()])
-        .then((r) => r);
+      // queryClient.invalidateQueries(["task", data.id.toString()]).then();
+      queryClient.invalidateQueries("tasks").then();
     },
   });
+};
 
 function buildNewTasks(
   data: Omit<TaskType, "id">,
