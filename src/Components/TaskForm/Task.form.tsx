@@ -1,11 +1,11 @@
 import { ChangeEvent, FC, FormEvent, useState } from "react";
-import { TaskType} from '../../hooks/api/tasks.api.hooks';
+import { TaskType } from "../../hooks/api/tasks.api.hooks";
 
-type OnSubmitWithoutId = (data: Omit<TaskType, 'id'>) => void;
+type OnSubmitWithoutId = (data: Omit<TaskType, "id">) => void;
 type OnSubmitWithId = (data: TaskType) => void;
 export const TaskForm: FC<{
   onSubmit: OnSubmitWithId | OnSubmitWithoutId;
-  isLoading?: boolean;
+  isLoading: boolean;
   submitText: string;
   initValue?: Partial<TaskType>;
 }> = ({ onSubmit, isLoading = false, submitText, initValue = {} }) => {
@@ -15,18 +15,18 @@ export const TaskForm: FC<{
     setTask(e.target.value);
   };
 
-  const onFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const data = {
-      title: task
-    }
+      title: task,
+    };
 
     if (initValue.id) {
       (onSubmit as OnSubmitWithId)({
         id: initValue.id,
-        ...data
-      })
+        ...data,
+      });
     } else {
       (onSubmit as OnSubmitWithoutId)(data);
     }
