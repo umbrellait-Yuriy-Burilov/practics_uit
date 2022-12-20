@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "react-query";
+import { QueryFunctionContext, useMutation, useQuery } from "react-query";
 import { queryClient } from "../../config/QueryProvider";
 import "./mocks/Tasks.mock";
 import { MOCK_API_TASK_URL } from "./mocks/Tasks.mock";
@@ -15,15 +15,19 @@ export type TasksType = {
   count: number;
 };
 
-const getTasks = (page: string) =>
-  fetch(`${API_TASK_URL}?page=${page}`).then(
+const getTasks = ({ queryKey }: QueryFunctionContext) => {
+  const [, pageId] = queryKey;
+  return fetch(`${API_TASK_URL}?page=${pageId}`).then(
     (res) => res.json() as Promise<TasksType>
   );
+};
 
-const getTask = async (id: string) =>
-  await fetch(`${API_TASK_URL}/${id}`).then(
+const getTask = ({ queryKey }: QueryFunctionContext) => {
+  const [, taskId] = queryKey;
+  return fetch(`${API_TASK_URL}/${taskId}`).then(
     (res) => res.json() as Promise<TaskType>
   );
+};
 
 const putTask = (task: TaskType) =>
   fetch(API_TASK_URL, {
@@ -37,30 +41,18 @@ const postTask = (task: Omit<TaskType, "id">) =>
     body: JSON.stringify(task),
   });
 
+export const useGetTask = (id: string) => useQuery(["task", id], getTask, {});
+
+export const useGetTasks = (page: string) =>
+  useQuery(["tasks", page], getTasks, {});
+
 export const usePostTask = () =>
   useMutation(postTask, {
     onMutate: (data) => {
       const oldTasks = queryClient.getQueryData<TasksType>(["tasks"]) ?? [];
 
       queryClient.setQueryData<TasksType>(["tasks"], (tasksData) => {
-        if (tasksData === undefined) {
-          tasksData = {
-            tasks: [],
-            count: 0,
-          };
-        }
-
-        const { tasks, count } = tasksData;
-        return {
-          tasks: [
-            ...tasks,
-            {
-              id: Date.now(),
-              ...data,
-            },
-          ],
-          count: count + 1,
-        };
+        return buildNewTasks(data, tasksData);
       });
 
       // add context
@@ -87,8 +79,27 @@ export const usePutTask = () =>
     },
   });
 
-export const useGetTask = (id: string) =>
-  useQuery(["task", id], () => getTask(id), {});
+function buildNewTasks(
+  data: Omit<TaskType, "id">,
+  tasksData: TasksType | undefined
+) {
+  if (tasksData === undefined) {
+    tasksData = {
+      tasks: [],
+      count: 0,
+    };
+  }
 
-export const useGetTasks = (page: string) =>
-  useQuery(["tasks", page], () => getTasks(page), {});
+  const { tasks, count } = tasksData;
+
+  return {
+    tasks: [
+      ...tasks,
+      {
+        id: Date.now(),
+        ...data,
+      },
+    ],
+    count: count + 1,
+  };
+}
