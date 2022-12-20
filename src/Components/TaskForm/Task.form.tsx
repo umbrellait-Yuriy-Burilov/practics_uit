@@ -1,14 +1,18 @@
 import { ChangeEvent, FC, FormEvent, useState } from "react";
-import { TaskType } from "../../hooks/api/tasks.api.hooks";
+import Button from "../_UI/Button/Button";
+import { StyledTaskForm } from "./Task.form.styled";
+import {
+  OnSubmitWithId,
+  OnSubmitWithoutId,
+  TaskFormProps,
+} from "./Task.form.types";
 
-type OnSubmitWithoutId = (data: Omit<TaskType, "id">) => void;
-type OnSubmitWithId = (data: TaskType) => void;
-export const TaskForm: FC<{
-  onSubmit: OnSubmitWithId | OnSubmitWithoutId;
-  isLoading: boolean;
-  submitText: string;
-  initValue?: Partial<TaskType>;
-}> = ({ onSubmit, isLoading = false, submitText, initValue = {} }) => {
+export const TaskForm: FC<TaskFormProps> = ({
+  onSubmit,
+  isLoading = false,
+  submitText,
+  initValue = {},
+}) => {
   const [task, setTask] = useState(initValue.title ?? "");
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,11 +39,16 @@ export const TaskForm: FC<{
   };
 
   return (
-    <form onSubmit={(e) => onFormSubmit(e)}>
-      <input type="text" value={task} onChange={onChange} />
-      <button type={"submit"} disabled={isLoading}>
+    <StyledTaskForm onSubmit={(e) => onFormSubmit(e)}>
+      <input
+        type="text"
+        value={task}
+        onChange={onChange}
+        placeholder={"new task title"}
+      />
+      <Button type={"submit"} disabled={isLoading}>
         {submitText}
-      </button>
-    </form>
+      </Button>
+    </StyledTaskForm>
   );
 };
