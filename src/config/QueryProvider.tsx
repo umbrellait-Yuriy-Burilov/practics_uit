@@ -5,7 +5,10 @@ import {ReactQueryDevtools} from 'react-query/devtools';
 const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: false
+        refetchOnWindowFocus: false,
+        // staleTime: Infinity, // время свежести данных
+        staleTime: 60 * 1000,
+        cacheTime: 60 * 1000
       }
     }
   }
