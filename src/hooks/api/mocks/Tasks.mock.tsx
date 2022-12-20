@@ -1,18 +1,20 @@
 import fetchMock from "fetch-mock";
 import { TasksResponseType } from "../tasks.api.hooks";
-import { TaskType } from "../../../models/task.type";
+import { TasksType, TaskType } from "../../../models/task.type";
 
 const API_TASK_URL = "/api/tasks";
 
 export const MOCK_API_TASK_URL = API_TASK_URL;
 
-const tasks = [...Array(200)].map((item, idx) => ({
+const tasks: TasksType = [...Array(200)].map((item, idx) => ({
   id: idx,
   title: `Task ${idx + 1}`,
+  pinned: Math.random() > 0.9,
+  state: Math.random() > 0.6,
 }));
 
 const tasksMock: TasksResponseType = {
-  tasks,
+  tasks: tasks.sort(sortByPined),
   count: tasks.length,
 };
 
@@ -70,5 +72,15 @@ fetchMock.put(API_TASK_URL, async (_, res) => {
     (task) => task.id === data.id
   );
 
-  return (tasksMock.tasks[currentTaskId] = data);
+  tasksMock.tasks[currentTaskId] = data;
+  tasksMock.tasks.sort(sortByPined);
+
+  return tasksMock;
 });
+
+export function sortByPined(a: TaskType, b: TaskType) {
+  if (a.pinned === b.pinned) {
+    return a.id - b.id;
+  }
+  return a.pinned ? -1 : 1;
+}
