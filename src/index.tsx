@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import {App} from './Components/App/App';
 import {QueryClient, QueryClientProvider} from 'react-query';
+import {ReactQueryDevtools} from 'react-query/devtools';
 
 const queryClient = new QueryClient();
 
@@ -12,6 +13,7 @@ ReactDOM.createRoot(
   // <React.StrictMode>
     <QueryClientProvider client={queryClient} >
       <App />
+      <ReactQueryDevtools />
     </QueryClientProvider>
   // </React.StrictMode>
 );
