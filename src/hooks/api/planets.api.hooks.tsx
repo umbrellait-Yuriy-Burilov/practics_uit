@@ -28,3 +28,11 @@ export const useGetPlanets = () => useQuery(
   () => axios.get<PlanetsResponseType>(API_PLANETS_URL).then(res => res.data),
   {}
 )
+
+export const useGetPlanet = (planetUrl: string) => {
+  return useQuery(
+    ['planet', planetUrl],
+    () => axios.get<PlanetType>(planetUrl).then(res => res.data),
+    {}
+  )
+}
