@@ -1,5 +1,5 @@
 import { FC, memo } from "react";
 
 export const Loading = memo((() => {
-  return <div>Loading...</div>;
+  return <p>Loading...</p>;
 }) as FC);

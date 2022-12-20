@@ -2,7 +2,7 @@ import { FC, memo } from "react";
 
 export const Update = memo((({ isUpdate }) => {
   if (isUpdate) {
-    return <div>Update...</div>;
+    return <p>Update...</p>;
   }
 
   return null;
