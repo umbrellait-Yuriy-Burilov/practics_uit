@@ -6,6 +6,7 @@ import { FilmPageWrapper } from "../tmp/FilmPageWrapper";
 import { IndexPage } from "../Pages/Index/Index.page";
 import { TasksPage } from "../Pages/Tasks/Tasks.page";
 import { TaskPage } from "../Pages/Tasks/Task.page";
+import { AltTasksPage } from "../Pages/Tasks/AltTasks.page";
 
 export const Router: FC = () => {
   return (
@@ -20,6 +21,10 @@ export const Router: FC = () => {
       <Route path={"tasks"}>
         <Route path={""} element={<TasksPage />} />
         <Route path={":page"} element={<TasksPage />} />
+      </Route>
+
+      <Route path={"alt-tasks"}>
+        <Route path={""} element={<AltTasksPage />} />
       </Route>
 
       <Route path={"task"}>
