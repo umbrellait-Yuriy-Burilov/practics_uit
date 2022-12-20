@@ -14,6 +14,7 @@ export const API_TASK_URL = MOCK_API_TASK_URL;
 export type TaskType = {
   id: number;
   title: string;
+  state?: boolean;
 };
 
 export type TasksType = {
