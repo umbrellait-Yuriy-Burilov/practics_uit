@@ -10,17 +10,22 @@ import { TaskPage } from "../Pages/Tasks/Task.page";
 export const Router: FC = () => {
   return (
     <Routes>
-      <Route path={"/"} element={<IndexPage />} />
+      <Route path={""} element={<IndexPage />} />
 
-      <Route path={"films"} element={<Films />}>
+      <Route path={"films"}>
+        <Route path={""} element={<Films />} />
         <Route path={":filmId"} element={<FilmPageWrapper />} />
       </Route>
 
-      <Route path={"tasks"} element={<TasksPage />}>
+      <Route path={"tasks"}>
+        <Route path={""} element={<TasksPage />} />
         <Route path={":page"} element={<TasksPage />} />
       </Route>
 
-      <Route path={"task/:taskId"} element={<TaskPage />} />
+      <Route path={"task"}>
+        <Route path={""} element={<NotFoundPage />} />
+        <Route path={":taskId"} element={<TaskPage />} />
+      </Route>
 
       <Route path={"*"} element={<NotFoundPage />} />
     </Routes>
