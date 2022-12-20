@@ -49,8 +49,7 @@ export default {
 
 const Template: ComponentStory<typeof Task> = ({
   task,
-  onChangeState,
-  onChangePinned,
+  onChangeTask,
   ...args
 }) => {
   const [state, setState] = useState(task.state);
@@ -64,8 +63,9 @@ const Template: ComponentStory<typeof Task> = ({
   return (
     <Task
       task={{ ...task, state, pinned }}
-      onChangeState={() => setState(!state)}
-      onChangePinned={() => setPinned(!pinned)}
+      onChangeTask={() => {}}
+      // onChangeState={() => setState(!state)}
+      // onChangePinned={() => setPinned(!pinned)}
       {...args}
     />
   );
