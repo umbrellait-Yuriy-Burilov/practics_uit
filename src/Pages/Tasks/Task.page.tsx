@@ -1,17 +1,18 @@
 import { FC } from "react";
-import { useParams } from "react-router-dom";
-import {
-  TaskType,
-  useGetTask,
-  usePutTask,
-} from "../../hooks/api/tasks.api.hooks";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetTask, usePutTask } from "../../hooks/api/tasks.api.hooks";
 import { Loading } from "../../Components/_UI/Loading/Loading";
 import { TaskForm } from "../../Components/TaskForm/Task.form";
 import { Update } from "../../Components/_UI/Update/Update";
 import { ShowError } from "../../Components/_UI/ShowError/ShowError";
+import { TaskType } from "../../models/task.type";
+import { TaskHeader } from "./Tasks.page.styled";
+import Button from "../../Components/_UI/Button/Button";
 
 export const TaskPage: FC = () => {
   const { taskId } = useParams();
+  const navigate = useNavigate();
+
   const { data, isLoading, isFetching, isError, error } = useGetTask(
     taskId as string
   );
@@ -35,6 +36,14 @@ export const TaskPage: FC = () => {
 
   return (
     <div>
+      <TaskHeader>
+        <Button onClick={() => navigate(-1)}>{`<`} Tasks</Button>
+
+        <div>
+          <Update isUpdate={isFetching} />
+        </div>
+      </TaskHeader>
+
       <ShowError isError={isError} error={error} />
       {task && (
         <>
@@ -55,7 +64,7 @@ export const TaskPage: FC = () => {
           </p>
 
           <ShowError isError={putIsError} error={putError} />
-          <Update isUpdate={isFetching} />
+
           <TaskForm
             onSubmit={onSubmit}
             submitText={putIsLoading ? "loading" : "update"}
