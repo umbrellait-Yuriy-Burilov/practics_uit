@@ -2,6 +2,7 @@ import { QueryFunctionContext, useMutation, useQuery } from "react-query";
 import { queryClient } from "../../config/QueryProvider";
 import "./mocks/Tasks.mock";
 import { MOCK_API_TASK_URL } from "./mocks/Tasks.mock";
+import { useEffect } from "react";
 
 export const API_TASK_URL = MOCK_API_TASK_URL;
 
@@ -15,7 +16,7 @@ export type TasksType = {
   count: number;
 };
 
-const getTasks = ({ queryKey }: QueryFunctionContext) => {
+export const getTasks = ({ queryKey }: QueryFunctionContext) => {
   const [, pageId] = queryKey;
   return fetch(`${API_TASK_URL}?page=${pageId}`).then(
     (res) => res.json() as Promise<TasksType>
@@ -43,17 +44,33 @@ const postTask = (task: Omit<TaskType, "id">) =>
 
 export const useGetTask = (id: string) => useQuery(["task", id], getTask, {});
 
-export const useGetTasks = (page: string) =>
-  useQuery(["tasks", page], getTasks, {});
+export const useGetTasks = (page: string) => {
+  const pageNum = Number(page);
+
+  useEffect(() => {
+    queryClient
+      .prefetchQuery(["tasks", (pageNum + 1).toString()], getTasks)
+      .then();
+    pageNum > 0 &&
+      queryClient
+        .prefetchQuery(["tasks", (pageNum - 1).toString()], getTasks)
+        .then();
+  }, [pageNum]);
+
+  return useQuery(["tasks", page], getTasks, {
+    keepPreviousData: true, // останавливаем рендер до загрузки данных
+  });
+};
 
 export const usePostTask = () =>
   useMutation(postTask, {
     onMutate: (data) => {
+      // todo после добавления page key не работает позитивное добавление
       const oldTasks = queryClient.getQueryData<TasksType>(["tasks"]) ?? [];
 
-      queryClient.setQueryData<TasksType>(["tasks"], (tasksData) => {
-        return buildNewTasks(data, tasksData);
-      });
+      queryClient.setQueryData<TasksType>(["tasks"], (tasksData) =>
+        buildNewTasks(data, tasksData)
+      );
 
       // add context
       return oldTasks;

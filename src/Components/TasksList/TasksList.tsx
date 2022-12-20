@@ -8,11 +8,15 @@ import { Link, useParams } from "react-router-dom";
 import { Pagination } from "../Pagination/Pagination";
 
 export const TasksList: FC = () => {
-  const { page = "1" } = useParams();
-  const { data, isLoading, isFetching, isError, error } = useGetTasks(page);
+  const { page: queryPage = "1" } = useParams();
+  const {
+    data: { tasks = [], count = 0 } = {},
+    isLoading,
+    isFetching,
+    isError,
+    error,
+  } = useGetTasks(queryPage);
 
-  const tasks = data?.tasks ?? [];
-  const count = data?.count ?? 0;
   const pageCount = count ? Math.ceil(count / 10) : 0;
 
   if (isLoading) {
@@ -34,7 +38,7 @@ export const TasksList: FC = () => {
 
       <Pagination
         path={"/tasks"}
-        currentPage={Number(page)}
+        currentPage={Number(queryPage)}
         pageCount={pageCount}
       />
 
