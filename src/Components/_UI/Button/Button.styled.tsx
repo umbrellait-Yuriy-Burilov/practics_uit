@@ -1,55 +1,66 @@
-import styled, {CSSObject} from 'styled-components';
-import {ButtonPropsType, VariantsType} from './Button.types';
+import styled, { css, FlattenSimpleInterpolation } from "styled-components";
+import { ButtonPropsType, SizesType, VariantsType } from "./Button.types";
 
-const ghost: CSSObject = {
-  color: "#333",
-  background: "transparent",
+const variants: Record<VariantsType, FlattenSimpleInterpolation> = {
+  primary: css`
+    color: #fff;
+    border-color: #1677ff;
+    background: #1677ff;
+
+    &:hover {
+      background: #4096ff;
+    }
+  `,
+  ghost: css`
+    border-color: #d9d9d9;
+    color: #333;
+    background: transparent;
+
+    &:hover {
+      color: #4096ff;
+    }
+  `,
 };
 
-const variant: Record<VariantsType, CSSObject> = {
-  primary: {
-    color: "#fff",
-    background: "green",
-  },
-  ghost: {
-    ...ghost,
-  },
-  link: {
-    ...ghost,
-    border: "none",
-  },
+const sizes: Record<SizesType, FlattenSimpleInterpolation> = {
+  small: css`
+    font-size: 12px;
+    line-height: 14px;
+    height: 22px;
+  `,
+  default: css`
+    font-size: 14px;
+    line-height: 24px;
+    height: 32px;
+  `,
+  big: css`
+    font-size: 20px;
+    line-height: 34px;
+    height: 42px;
+  `,
 };
 
-const big: CSSObject = {
-  fontSize: "20px",
-  lineHeight: "24px",
-};
-
-const small: CSSObject = {
-  fontSize: "12px",
-  lineHeight: "14px",
-};
-
-export const StyledButton = styled.button<
-  Required<Pick<ButtonPropsType, "variant" | "size">>
->`
-  border: 1px solid #ddd;
+export const StyledButton = styled.button<ButtonPropsType>`
+  box-shadow: 0 2px 0 rgb(5 145 255 / 10%);
+  padding: 4px 12px;
   border-radius: 4px;
-  font-size: 14px;
-  line-height: 20px;
   cursor: pointer;
-  ${(props) => variant[props.variant]} // Obj vs switch
-  ${({ size }) => {
-  switch (size) {
-    case "big":
-      return big;
-    case "small":
-      return small;
-  }
-}}
-`;
+  border: 1px solid;
+  transition: all 0.1s 0s ease-in;
 
-// StyledButton.defaultProps = {
-//   variant: "primary",
-//   size: "default",
-// };
+  &:hover {
+    border-color: #4096ff;
+  }
+
+  ${({ wade = false }) =>
+    wade
+      ? css`
+          display: block;
+          width: 100%;
+        `
+      : css`
+          display: inline-block;
+        `};
+  ${({ size = "default" }) => sizes[size]}
+  ${({ variant = "primary" }) => variants[variant]}
+`;
