@@ -1,5 +1,6 @@
 import fetchMock from "fetch-mock";
-import { TasksType, TaskType } from "../tasks.api.hooks";
+import { TasksResponseType } from "../tasks.api.hooks";
+import { TaskType } from "../../../models/task.type";
 
 const API_TASK_URL = "/api/tasks";
 
@@ -10,7 +11,7 @@ const tasks = [...Array(200)].map((item, idx) => ({
   title: `Task ${idx + 1}`,
 }));
 
-const tasksMock: TasksType = {
+const tasksMock: TasksResponseType = {
   tasks,
   count: tasks.length,
 };

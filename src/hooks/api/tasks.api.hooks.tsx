@@ -8,16 +8,11 @@ import { queryClient } from "../../config/QueryProvider";
 import "./mocks/Tasks.mock";
 import { MOCK_API_TASK_URL } from "./mocks/Tasks.mock";
 import { useEffect } from "react";
+import { TaskType } from "../../models/task.type";
 
 export const API_TASK_URL = MOCK_API_TASK_URL;
 
-export type TaskType = {
-  id: number;
-  title: string;
-  state?: boolean;
-};
-
-export type TasksType = {
+export type TasksResponseType = {
   tasks: TaskType[];
   count: number;
 };
@@ -25,13 +20,13 @@ export type TasksType = {
 export const getTasks = ({ queryKey }: QueryFunctionContext) => {
   const [, pageId] = queryKey;
   return fetch(`${API_TASK_URL}?page=${pageId}`).then(
-    (res) => res.json() as Promise<TasksType>
+    (res) => res.json() as Promise<TasksResponseType>
   );
 };
 
 export const getAltTasks = ({ pageParam = 1 }: QueryFunctionContext) => {
   return fetch(`${API_TASK_URL}?page=${pageParam}`).then(
-    (res) => res.json() as Promise<TasksType>
+    (res) => res.json() as Promise<TasksResponseType>
   );
 };
 
@@ -93,9 +88,10 @@ export const usePostTask = () =>
   useMutation(postTask, {
     onMutate: (data) => {
       // todo после добавления page key не работает позитивное добавление
-      const oldTasks = queryClient.getQueryData<TasksType>(["tasks"]) ?? [];
+      const oldTasks =
+        queryClient.getQueryData<TasksResponseType>(["tasks"]) ?? [];
 
-      queryClient.setQueryData<TasksType>(["tasks"], (tasksData) =>
+      queryClient.setQueryData<TasksResponseType>(["tasks"], (tasksData) =>
         buildNewTasks(data, tasksData)
       );
 
@@ -125,7 +121,7 @@ export const usePutTask = () =>
 
 function buildNewTasks(
   data: Omit<TaskType, "id">,
-  tasksData: TasksType | undefined
+  tasksData: TasksResponseType | undefined
 ) {
   if (tasksData === undefined) {
     tasksData = {
