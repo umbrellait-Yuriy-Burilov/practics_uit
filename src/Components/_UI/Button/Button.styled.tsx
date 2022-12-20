@@ -7,7 +7,7 @@ const variants: Record<VariantsType, FlattenSimpleInterpolation> = {
     border-color: #1677ff;
     background: #1677ff;
 
-    &:hover {
+    &:not(:disabled):hover {
       background: #4096ff;
     }
   `,
@@ -16,7 +16,7 @@ const variants: Record<VariantsType, FlattenSimpleInterpolation> = {
     color: #333;
     background: transparent;
 
-    &:hover {
+    &:not(:disabled):hover {
       color: #4096ff;
     }
   `,
@@ -44,11 +44,10 @@ export const StyledButton = styled.button<ButtonPropsType>`
   box-shadow: 0 2px 0 rgb(5 145 255 / 10%);
   padding: 4px 8px;
   border-radius: 4px;
-  cursor: pointer;
   border: 1px solid;
   transition: all 0.1s 0s ease-in;
-
-  &:hover {
+  &:not(:disabled):hover {
+    cursor: pointer;
     border-color: #4096ff;
   }
 
@@ -63,4 +62,7 @@ export const StyledButton = styled.button<ButtonPropsType>`
         `};
   ${({ size = "default" }) => sizes[size]}
   ${({ variant = "primary" }) => variants[variant]}
+  &:disabled {
+    opacity: 0.6;
+  }
 `;
