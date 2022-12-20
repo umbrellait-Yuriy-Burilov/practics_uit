@@ -1,5 +1,5 @@
-import {FC} from 'react';
+import { FC, memo } from "react";
 
-export const Loading: FC = () => {
-  return <div>Loading...</div>
-}
+export const Loading = memo((() => {
+  return <div>Loading...</div>;
+}) as FC);
