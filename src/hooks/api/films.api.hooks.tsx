@@ -37,3 +37,16 @@ export const useGetFilms = (query?: string) => {
     }
   );
 }
+
+export const useGetFilm = (filmUrl: string) => {
+  return useQuery(
+    ['planet', filmUrl],
+    () => axios.get<FilmType>(filmUrl).then(res => res.data),
+    {
+      initialData: {
+        title: 'some film',
+        planets: []
+      } as FilmType
+    }
+  )
+}
