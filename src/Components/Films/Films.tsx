@@ -1,11 +1,9 @@
-import { FC, useState } from "react";
-import { FilmPage } from "../../Pages/Films/Film.page";
-import { useGetFilms } from "../../hooks/api/films.api.hooks";
+import { FC } from "react";
+import {getIdFromFilmUrl, useGetFilms} from '../../hooks/api/films.api.hooks';
 import { Loading } from "../_UI/Loading/Loading";
+import {Link} from 'react-router-dom';
 
 export const Films: FC = () => {
-  const [filmUrl, setFilmUrl] = useState("");
-
   const { data, isLoading } = useGetFilms();
 
   const films = data?.results ?? [];
@@ -16,18 +14,14 @@ export const Films: FC = () => {
 
   return (
     <ul>
-      {filmUrl && (
-        <div>
-          <button onClick={() => setFilmUrl("")}>back</button>
-          <FilmPage filmUrl={filmUrl} />
-        </div>
-      )}
-      {!filmUrl &&
-        films.map((film) => (
-          <li onClick={() => setFilmUrl(film.url)} key={film.episode_id}>
-            <b>Film: </b>{film.title}
-          </li>
-        ))}
+      {films.map((film) => (
+        <li key={film.episode_id}>
+          <b>Film: </b>
+          <Link to={`film/${getIdFromFilmUrl(film.url)}`} >
+            {film.title}
+          </Link>
+        </li>
+      ))}
     </ul>
   );
   // return <FilmsPage />;
