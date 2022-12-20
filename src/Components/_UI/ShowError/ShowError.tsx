@@ -6,5 +6,9 @@ export const ShowError: FC<ShowErrorProps> = ({ error }) => {
     return <div>{error.message}</div>;
   }
 
+  if (error instanceof String) {
+    return <div>{error}</div>
+  }
+
   return <div>Something went wrong</div>;
 };
