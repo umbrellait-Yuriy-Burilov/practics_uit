@@ -1,14 +1,12 @@
 import { FC, useState } from "react";
+import { FilmPage } from "../../Pages/Films/Film.page";
 import { useGetFilms } from "../../hooks/api/films.api.hooks";
 import { Loading } from "../_UI/Loading/Loading";
-import { ShowError } from "../_UI/ShowError/ShowError";
-import { Update } from "../_UI/Update/Update";
-import { FilmList } from "../FilmList/FilmList";
-import { SearchFilm } from "../SearchFilm/SearchFilm";
 
 export const Films: FC = () => {
-  const { data, isLoading, isError, isFetching, error } = useGetFilms();
-  const [searchFilm, setSearchFilm] = useState("");
+  const [filmUrl, setFilmUrl] = useState("");
+
+  const { data, isLoading } = useGetFilms();
 
   const films = data?.results ?? [];
 
@@ -17,21 +15,20 @@ export const Films: FC = () => {
   }
 
   return (
-    <div>
-      <p>
-        Search film:{" "}
-        <input
-          type="text"
-          value={searchFilm}
-          onChange={(e) => setSearchFilm(e.target.value)}
-        />
-      </p>
-
-      <SearchFilm search={searchFilm} />
-
-      <Update isUpdate={isFetching} />
-      <ShowError isError={isError} error={error} />
-      <FilmList films={films} />
-    </div>
+    <ul>
+      {filmUrl && (
+        <div>
+          <button onClick={() => setFilmUrl("")}>back</button>
+          <FilmPage filmUrl={filmUrl} />
+        </div>
+      )}
+      {!filmUrl &&
+        films.map((film) => (
+          <li onClick={() => setFilmUrl(film.url)} key={film.episode_id}>
+            <b>Film: </b>{film.title}
+          </li>
+        ))}
+    </ul>
   );
+  // return <FilmsPage />;
 };
