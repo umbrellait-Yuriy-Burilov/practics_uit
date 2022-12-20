@@ -1,16 +1,8 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { FilmPage } from "../Pages/Films/Film.page";
-import { queryClient } from "../config/QueryProvider";
-import { apiGetFilm } from "../hooks/api/films.api.hooks";
-import { useParams } from "react-router-dom";
 
 export const FilmPageWrapper: FC = () => {
   const [isShow, setIsShow] = useState(false);
-  const { filmId } = useParams();
-
-  useEffect(() => {
-    queryClient?.prefetchQuery(["film", filmId], () => apiGetFilm(filmId as string));
-  }, [filmId]);
 
   return (
     <>

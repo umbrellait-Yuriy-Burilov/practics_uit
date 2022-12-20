@@ -1,7 +1,6 @@
 import { useQuery } from "react-query";
 import { API_FILMS_URL } from "./config.api";
 import axios from "axios";
-import { queryClient } from "../../config/QueryProvider";
 
 export const getIdFromFilmUrl = (url: string) =>
   url.replace(`${API_FILMS_URL}/`, "").replaceAll('/','');
@@ -39,12 +38,6 @@ export const useGetFilms = (query?: string) => {
     () => axios.get<FilmsResponseType>(url).then((res) => res.data),
     {
       enabled: query !== "",
-      onSuccess: (data) => {
-        data.results.forEach((film) => {
-          const filmId = getIdFromFilmUrl(film.url);
-          queryClient.setQueryData(["film", filmId], film);
-        });
-      },
     }
   );
 };
