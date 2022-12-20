@@ -1,10 +1,11 @@
 import { useQuery } from "react-query";
 import { API_FILMS_URL } from "./config.api";
 import axios from "axios";
+import { queryClient } from "../../config/QueryProvider";
 
 export type FilmType = {
   title: string;
-  opening_crawl: string,
+  opening_crawl: string;
   url: string;
   created: string;
   director: string;
@@ -25,29 +26,29 @@ export const useGetFilms = (query?: string) => {
   let url = API_FILMS_URL;
   const queryKey = ["films"];
 
-  if (query !== '' && query) {
+  if (query !== "" && query) {
     queryKey.push(query);
-    url += `?search=${query}`
+    url += `?search=${query}`;
   }
 
   return useQuery(
     queryKey,
     () => axios.get<FilmsResponseType>(url).then((res) => res.data),
     {
-      enabled: query !== ''
+      enabled: query !== "",
     }
   );
-}
+};
 
 export const useGetFilm = (filmUrl: string) => {
   return useQuery(
-    ['planet', filmUrl],
-    () => axios.get<FilmType>(filmUrl).then(res => res.data),
+    ["planet", filmUrl],
+    () => axios.get<FilmType>(filmUrl).then((res) => res.data),
     {
-      initialData: {
-        title: 'some film',
-        planets: []
-      } as FilmType
+      initialData: () =>
+        queryClient
+          .getQueryData<FilmsResponseType>("films")
+          ?.results?.find((film) => film.url === filmUrl),
     }
-  )
-}
+  );
+};
