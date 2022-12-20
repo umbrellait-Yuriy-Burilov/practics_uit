@@ -19,6 +19,12 @@ export const FilmPage: FC = () => {
     queryClient?.invalidateQueries(['film', filmId as string])
   };
 
+  const onStale = () => {
+    queryClient?.invalidateQueries(['film', filmId as string], {
+      refetchActive: false
+    })
+  }
+
   return (
     <div>
       <ShowError isError={isError} error={error} />
@@ -27,6 +33,7 @@ export const FilmPage: FC = () => {
           <h3>{film.title}</h3>
           <p>{film.opening_crawl}</p>
           <p><button onClick={() => onUpdate()} disabled={isFetching}>Update</button></p>
+          <p><button onClick={() => onStale()}>Stale</button></p>
           <Update isUpdate={isFetching} />
         </>
       )}

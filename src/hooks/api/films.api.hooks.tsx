@@ -55,6 +55,7 @@ export const useGetFilm = (filmId: string) => {
     () =>
       axios.get<FilmType>(`${API_FILMS_URL}/${filmId}`).then((res) => res.data),
     {
+      staleTime: 10 * 1000,
       // onSuccess: (data) => {
       //
       // },
