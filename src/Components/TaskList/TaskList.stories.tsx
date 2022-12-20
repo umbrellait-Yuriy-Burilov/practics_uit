@@ -1,6 +1,7 @@
 import { TaskList } from "./TaskList";
-import { TasksType } from "../../models/task.type";
+import { TasksType, TaskType } from "../../models/task.type";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { useEffect, useState } from "react";
 
 const initTasks: TasksType = [...Array(10)].map((task, idx) => ({
   id: idx,
@@ -31,8 +32,23 @@ export default {
   },
 } as ComponentMeta<typeof TaskList>;
 
-const Template: ComponentStory<typeof TaskList> = (args) => (
-  <TaskList {...args} />
-);
+const Template: ComponentStory<typeof TaskList> = ({
+  tasks: initTasks,
+  ...args
+}) => {
+  const [tasks, setTask] = useState(initTasks);
+
+  useEffect(() => {
+    setTask(initTasks);
+  }, [initTasks]);
+
+  const onTaskUpdate = (newTask: TaskType) => {
+    setTask(
+      [...tasks].map((task) => (task.id === newTask.id ? newTask : task))
+    );
+  };
+
+  return <TaskList {...args} tasks={tasks} onTaskUpdate={onTaskUpdate} />;
+};
 
 export const Default = Template.bind({});
