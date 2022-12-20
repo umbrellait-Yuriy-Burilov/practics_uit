@@ -1,4 +1,4 @@
-### Учебный проект для знакомства с react-query
+### Учебный проект для знакомства с react-query и storybook
 
 ---
 
@@ -18,6 +18,17 @@
 
 в данном случе был использован плохой подход в целях обучения, для лучшей реализации, необходимо использовать кастомный компонент, на основе пагинации, который будет обновлять только видимые страницы
 
+#### STORYBOOK COMPONENTS:
+
+- Pagination Component
+- Task Component
+- TaskList Component
+- TaskForm Component
+- Button
+- Checkbox
+
+##### [http://localhost:6006/](http://localhost:6006/)
+
 ---
 
 Запуск проекта: [http://localhost:3000](http://localhost:3000)
@@ -29,3 +40,15 @@
 ### `npm run build`
 
 ---
+
+
+Запуск storybook проекта: [http://localhost:6006](http://localhost:6006)
+### `npm storybook`
+
+---
+
+Сборка storybook проекта:
+### `npm storybook-build`
+
+---
+
