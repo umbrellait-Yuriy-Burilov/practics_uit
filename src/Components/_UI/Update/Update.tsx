@@ -1,10 +1,9 @@
-import {FC} from 'react';
+import { FC, memo } from "react";
 
-export const Update: FC<{isUpdate: boolean}> = ({isUpdate}) => {
+export const Update = memo((({ isUpdate }) => {
   if (isUpdate) {
-    return <div>Update...</div>
+    return <div>Update...</div>;
   }
 
-  return null
-
-}
+  return null;
+}) as FC<{ isUpdate: boolean }>);
