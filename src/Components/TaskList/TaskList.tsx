@@ -1,34 +1,36 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { TaskType } from "../../models/task.type";
 import { StyledTaskList } from "./TaskList.styled";
 import { Task } from "../Task/Task";
 import { TaskListTypes } from "./TaskList.types";
 
-export const TaskList: FC<TaskListTypes> = (props) => {
-  const [tasks, setTasks] = useState(props.tasks.sort(sortByPined));
+export const TaskList: FC<TaskListTypes> = ({
+  after,
+  tasks,
+  onTaskUpdate = () => {},
+}) => {
+  const [sortedTasks, setSortedTasks] = useState(tasks.sort(sortByPined));
 
-  const onChangePinned = (id: number) => {
-    const newTasks = [...tasks];
-    const task = newTasks.find((task) => task.id === id) as TaskType;
-    task.pinned = !task.pinned;
-    setTasks([...newTasks.sort(sortByPined)]);
-  };
+  useEffect(() => {
+    setSortedTasks(tasks.sort(sortByPined));
+  }, [tasks]);
 
-  const onChangeState = (id: number) => {
-    const newTasks = [...tasks];
-    const task = newTasks.find((task) => task.id === id) as TaskType;
-    task.state = !task.state;
-    setTasks([...newTasks]);
+  const onChangeTask = (changedTask: TaskType) => {
+    const newTasks = [...tasks].map((task) =>
+      task.id === changedTask.id ? changedTask : task
+    );
+    setSortedTasks([...newTasks.sort(sortByPined)]);
+    onTaskUpdate(changedTask);
   };
 
   return (
     <StyledTaskList>
-      {tasks.map((task) => (
+      {sortedTasks.map((task) => (
         <Task
           key={task.id}
           task={task}
-          onChangePinned={onChangePinned}
-          onChangeState={onChangeState}
+          onChangeTask={onChangeTask}
+          after={after ? after(task) : null}
         />
       ))}
     </StyledTaskList>
