@@ -10,77 +10,85 @@ export type TaskType = {
   title: string;
 };
 
-export type TasksType = TaskType[];
+export type TasksType = {
+  tasks: TaskType[];
+  count: number;
+};
+
+const getTasks = (page: string) =>
+  fetch(`${API_TASK_URL}?page=${page}`).then(
+    (res) => res.json() as Promise<TasksType>
+  );
+
+const getTask = async (id: string) =>
+  await fetch(`${API_TASK_URL}/${id}`).then(
+    (res) => res.json() as Promise<TaskType>
+  );
+
+const putTask = (task: TaskType) =>
+  fetch(API_TASK_URL, {
+    method: "PUT",
+    body: JSON.stringify(task),
+  });
+
+const postTask = (task: Omit<TaskType, "id">) =>
+  fetch(API_TASK_URL, {
+    method: "POST",
+    body: JSON.stringify(task),
+  });
 
 export const usePostTask = () =>
-  useMutation(
-    (task: Omit<TaskType, "id">) =>
-      fetch(API_TASK_URL, {
-        method: "POST",
-        body: JSON.stringify(task),
-      }),
-    {
-      onMutate: (data) => {
-        const oldTasks = queryClient.getQueryData<TasksType>(["tasks"]) ?? [];
+  useMutation(postTask, {
+    onMutate: (data) => {
+      const oldTasks = queryClient.getQueryData<TasksType>(["tasks"]) ?? [];
 
-        queryClient.setQueryData<TasksType>(
-          ["tasks"],
-          (tasks = [] as TasksType) => [
+      queryClient.setQueryData<TasksType>(["tasks"], (tasksData) => {
+        if (tasksData === undefined) {
+          tasksData = {
+            tasks: [],
+            count: 0,
+          };
+        }
+
+        const { tasks, count } = tasksData;
+        return {
+          tasks: [
             ...tasks,
             {
               id: Date.now(),
               ...data,
             },
-          ]
-        );
+          ],
+          count: count + 1,
+        };
+      });
 
-        // add context
-        return oldTasks;
-      },
-      onError: (error, variables, oldTasks) => {
-        // extract oldTasks from context
-        queryClient.setQueryData(["tasks"], () => oldTasks);
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries(["tasks"]).then((r) => r);
-      },
-    }
-  );
+      // add context
+      return oldTasks;
+    },
+    onError: (error, variables, oldTasks) => {
+      // extract oldTasks from context
+      queryClient.setQueryData(["tasks"], () => oldTasks);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["tasks"]).then((r) => r);
+    },
+  });
 
 export const usePutTask = () =>
-  useMutation(
-    (task: TaskType) =>
-      fetch(API_TASK_URL, {
-        method: "PUT",
-        body: JSON.stringify(task),
-      }),
-    {
-      onMutate: (data) => {
-        queryClient.setQueryData(["task", data.id.toString()], data);
-      },
-      onSettled: (res, err, data) => {
-        queryClient
-          .invalidateQueries(["task", data.id.toString()])
-          .then((r) => r);
-      },
-    }
-  );
+  useMutation(putTask, {
+    onMutate: (data) => {
+      queryClient.setQueryData(["task", data.id.toString()], data);
+    },
+    onSettled: (res, err, data) => {
+      queryClient
+        .invalidateQueries(["task", data.id.toString()])
+        .then((r) => r);
+    },
+  });
 
 export const useGetTask = (id: string) =>
-  useQuery(
-    ["task", id],
-    () =>
-      fetch(`${API_TASK_URL}/${id}`).then(
-        (res) => res.json() as Promise<TaskType>
-      ),
-    {}
-  );
+  useQuery(["task", id], () => getTask(id), {});
+
 export const useGetTasks = (page: string) =>
-  useQuery(
-    ["tasks", page],
-    () =>
-      fetch(`${API_TASK_URL}?page=${page}`).then(
-        (res) => res.json() as Promise<TasksType>
-      ),
-    {}
-  );
+  useQuery(["tasks", page], () => getTasks(page), {});
