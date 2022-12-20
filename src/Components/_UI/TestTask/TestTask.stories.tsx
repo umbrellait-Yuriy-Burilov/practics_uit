@@ -6,13 +6,13 @@ import React from "react";
 
 const defaultTask: TaskType = {
   id: 1,
-  title: "Test TestTask",
+  title: "TestTask",
   state: false,
 };
 
 export default {
   component: TestTask,
-  title: "Task",
+  title: "TestTask",
   decorators: [
     (Story) => {
       return (
