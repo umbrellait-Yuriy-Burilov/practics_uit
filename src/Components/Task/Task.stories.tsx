@@ -2,6 +2,7 @@ import { Task } from "./Task";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { useEffect, useState } from "react";
 import { TaskType } from "../../models/task.type";
+import Button from '../_UI/Button/Button';
 
 const initTask: TaskType = {
   id: 0,
@@ -43,29 +44,33 @@ export default {
         value: "task",
       },
     },
+    after: {
+      defaultValue: 'none',
+      options: ['none','button'],
+      mapping: {
+        none: null,
+        button: <Button size={'small'}>button</Button>
+      }
+    }
   },
   parameters: {}, // for all component of story
 } as ComponentMeta<typeof Task>;
 
 const Template: ComponentStory<typeof Task> = ({
-  task,
+  task: initTask,
   onChangeTask,
   ...args
 }) => {
-  const [state, setState] = useState(task.state);
-  const [pinned, setPinned] = useState(task.pinned);
+  const [task, setTaskState] = useState(initTask);
 
   useEffect(() => {
-    setState(task.state);
-    setPinned(task.pinned);
-  }, [task]);
+    setTaskState(initTask);
+  }, [initTask]);
 
   return (
     <Task
-      task={{ ...task, state, pinned }}
-      onChangeTask={() => {}}
-      // onChangeState={() => setState(!state)}
-      // onChangePinned={() => setPinned(!pinned)}
+      task={task}
+      onChangeTask={(task) => setTaskState(task)}
       {...args}
     />
   );
@@ -73,3 +78,8 @@ const Template: ComponentStory<typeof Task> = ({
 
 export const Default = Template.bind({});
 Default.args = {};
+
+export const WithButton = Template.bind({});
+WithButton.args = {
+  after: <Button size={'small'}>button</Button>
+}
