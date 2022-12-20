@@ -49,11 +49,12 @@ export const useGetFilms = (query?: string) => {
   );
 };
 
+export const apiGetFilm = (filmId: string) => axios.get<FilmType>(`${API_FILMS_URL}/${filmId}`).then((res) => res.data);
+
 export const useGetFilm = (filmId: string) => {
   return useQuery(
     ["film", filmId],
-    () =>
-      axios.get<FilmType>(`${API_FILMS_URL}/${filmId}`).then((res) => res.data),
+    () => apiGetFilm(filmId),
     {
       staleTime: 10 * 1000,
       cacheTime: 10 * 1000
