@@ -3,6 +3,9 @@ import { API_FILMS_URL } from "./config.api";
 import axios from "axios";
 import { queryClient } from "../../config/QueryProvider";
 
+export const getIdFromFilmUrl = (url: string) =>
+  url.replace(`${API_FILMS_URL}/`, "").replaceAll('/','');
+
 export type FilmType = {
   title: string;
   opening_crawl: string;
@@ -38,17 +41,19 @@ export const useGetFilms = (query?: string) => {
       enabled: query !== "",
       onSuccess: (data) => {
         data.results.forEach((film) => {
-          queryClient.setQueryData(["film", film.url], film);
+          const filmId = getIdFromFilmUrl(film.url);
+          queryClient.setQueryData(["film", filmId], film);
         });
       },
     }
   );
 };
 
-export const useGetFilm = (filmUrl: string) => {
+export const useGetFilm = (filmId: string) => {
   return useQuery(
-    ["film", filmUrl],
-    () => axios.get<FilmType>(filmUrl).then((res) => res.data),
+    ["film", filmId],
+    () =>
+      axios.get<FilmType>(`${API_FILMS_URL}/${filmId}`).then((res) => res.data),
     {
       // onSuccess: (data) => {
       //
