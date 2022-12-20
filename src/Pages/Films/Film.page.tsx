@@ -4,6 +4,7 @@ import { Loading } from "../../Components/_UI/Loading/Loading";
 import { Update } from "../../Components/_UI/Update/Update";
 import {useParams} from 'react-router-dom';
 import {ShowError} from '../../Components/_UI/ShowError/ShowError';
+import {queryClient} from '../../config/QueryProvider';
 
 export const FilmPage: FC = () => {
   const { filmId } = useParams();
@@ -14,6 +15,10 @@ export const FilmPage: FC = () => {
     return <Loading />;
   }
 
+  const onUpdate = () => {
+    queryClient?.invalidateQueries(['film', filmId as string])
+  };
+
   return (
     <div>
       <ShowError isError={isError} error={error} />
@@ -21,6 +26,7 @@ export const FilmPage: FC = () => {
         <>
           <h3>{film.title}</h3>
           <p>{film.opening_crawl}</p>
+          <p><button onClick={() => onUpdate()} disabled={isFetching}>Update</button></p>
           <Update isUpdate={isFetching} />
         </>
       )}
