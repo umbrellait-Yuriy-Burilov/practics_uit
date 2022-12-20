@@ -5,6 +5,7 @@ export const IndexPage: FC = () => {
   return (
     <ul>
       <li><Link to={'/films'} >Films</Link></li>
+      <li><Link to={'/tasks'} >Tasks</Link></li>
     </ul>
   )
 }
