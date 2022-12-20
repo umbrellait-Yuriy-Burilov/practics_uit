@@ -1,5 +1,5 @@
 export type PaginationPropsType = {
-  path: string;
   currentPage: number;
   pageCount: number;
+  onChange: (page: number) => void
 };

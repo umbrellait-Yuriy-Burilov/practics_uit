@@ -1,48 +1,34 @@
 import { FC, memo } from "react";
-import { Link } from "react-router-dom";
 import Button from "../_UI/Button/Button";
 import { PaginationPropsType } from "./Pagination.types";
 import { StyledPagination } from "./Pagination.styled";
 
 export const Pagination: FC<PaginationPropsType> = memo(
-  ({ path, currentPage, pageCount }) => {
+  ({ onChange, currentPage, pageCount }) => {
+
     return (
       <StyledPagination>
-        {currentPage >= 2 ? (
-          <Link to={`${path}/${1}`}>
-            <Button>первая</Button>
-          </Link>
-        ) : (
-          <Button disabled>первая</Button>
-        )}
+        <Button
+          onClick={() =>onChange(1)}
+          disabled={currentPage === 1}
+        >первая</Button>
 
-        {currentPage <= 1 ? (
-          <Button disabled={true}>предыдущая</Button>
-        ) : (
-          <Link
-            to={currentPage === 2 ? `${path}` : `${path}/${currentPage - 1}`}
-          >
-            <Button>предыдущая</Button>
-          </Link>
-        )}
+        <Button
+          onClick={() =>onChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >предыдущая</Button>
 
         {` ${currentPage} `}
 
-        {currentPage >= pageCount ? (
-          <Button disabled={true}>следующая</Button>
-        ) : (
-          <Link to={`${path}/${Number(currentPage) + 1}`}>
-            <Button>следующая</Button>
-          </Link>
-        )}
+        <Button
+          onClick={() =>onChange(currentPage + 1)}
+          disabled={currentPage >= pageCount}
+        >следующая</Button>
 
-        {currentPage <= pageCount - 1 ? (
-          <Link to={`${path}/${pageCount}`}>
-            <Button>последняя</Button>
-          </Link>
-        ) : (
-          <Button disabled>последняя</Button>
-        )}
+        <Button
+          onClick={() =>onChange(pageCount)}
+          disabled={currentPage >= pageCount}
+        >последняя</Button>
       </StyledPagination>
     );
   }

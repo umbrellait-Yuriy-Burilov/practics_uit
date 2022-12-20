@@ -3,7 +3,7 @@ import { useGetTasks, usePutTask } from "../../hooks/api/tasks.api.hooks";
 import { ShowError } from "../../Components/_UI/ShowError/ShowError";
 import { TaskType } from "../../models/task.type";
 import { TaskList } from "../../Components/TaskList/TaskList";
-import { Link, useParams } from "react-router-dom";
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import Button from "../../Components/_UI/Button/Button";
 import { Loading } from "../../Components/_UI/Loading/Loading";
 import { Pagination } from "../../Components/Pagination/Pagination";
@@ -13,6 +13,7 @@ import { TaskHeader } from "./Tasks.page.styled";
 
 export const TasksPage: FC = () => {
   const { page: queryPage = "1" } = useParams();
+  const navigate = useNavigate()
 
   const {
     data: { tasks = [], count = 0 } = {},
@@ -62,7 +63,7 @@ export const TasksPage: FC = () => {
       />
 
       <Pagination
-        path={"/tasks"}
+        onChange={(page) => navigate(`/tasks/${page}`)}
         currentPage={Number(queryPage)}
         pageCount={pageCount}
       />
