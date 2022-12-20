@@ -36,19 +36,33 @@ export const useGetFilms = (query?: string) => {
     () => axios.get<FilmsResponseType>(url).then((res) => res.data),
     {
       enabled: query !== "",
+      onSuccess: (data) => {
+        data.results.forEach((film) => {
+          queryClient.setQueryData(["film", film.url], film);
+        });
+      },
     }
   );
 };
 
 export const useGetFilm = (filmUrl: string) => {
   return useQuery(
-    ["planet", filmUrl],
+    ["film", filmUrl],
     () => axios.get<FilmType>(filmUrl).then((res) => res.data),
     {
-      initialData: () =>
-        queryClient
-          .getQueryData<FilmsResponseType>("films")
-          ?.results?.find((film) => film.url === filmUrl),
+      // onSuccess: (data) => {
+      //
+      // },
+      // onError: (error) => {
+      //
+      // },
+      // onSettled: (data, error) => {
+      //
+      // }
+      // initialData: () => // плохой вариант
+      //   queryClient
+      //     .getQueryData<FilmsResponseType>("films")
+      //     ?.results?.find((film) => film.url === filmUrl),
     }
   );
 };
